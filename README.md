@@ -13,9 +13,9 @@ Chorus lapilli is like tic-tac-toe in that players take turn placing pieces on a
 
 This is my first attempt at building a web-based game using React. In the process of exploration, I learned about React, JavaScript, JSon, Node.js, HTML, CSS, DOM, JSX, Chrome dev tools, React reconciliation. This [React Tutorial](https://reactjs.org/tutorial/tutorial.html) is immensely helpful during the course of my project
 
-## About the Log Files
+## About Log Files
 
-[tic-tac-toe.txt] and [chorus-lapilli.txt] are two log files that recorded every step I took in order to make the web application successful.
+tic-tac-toe.txt and chorus-lapilli.txt are two log files that recorded every step I took in order to make the web application successful.
 
 ---
 
