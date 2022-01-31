@@ -1,0 +1,235 @@
+Tic-tac-toe Log1. Go to https://reactjs.org/tutorial/tutorial.html. 
+2. Go to Section "Setup for the Tutorial", subsection "option 2". Follow the instructions by installing Node.js
+3. For Mac users, (I use Mac) go to terminal and type in
+	npx create-react-app tic-tac-toe
+4. follow the instructions to delete all files int he src/ folder, using code:
+	cd tic-tac-toe
+	cd src
+	rm -f * RET y RET
+	cd ..
+5. Create files index.css, index.js using emacs, copy paste the code into the files, add designated three lines to the top of index.js in the src/ folder as instructed
+6. Type this code in the project folder to see the browser 
+	npm start
+7. In Board’s renderSquare method, change the code to pass a prop called value to the Square:
+	return <Square value={i} />;
+8. Change Square’s render method to show that value by replacing {/* TODO */} with 	{this.props.value}
+9. Now run the program to visualize the change on the browser by typing in:
+	npm start
+10. Now, change the button tag that is returned from the Square component’s render() function to this:
+	<button className="square" onClick={function() { console.log('click'); }}>
+11. Save the change, on the browser, go to developer tools page -> console   to visualize the recording of the clicks.
+12. Change <button className="square" onClick={function() { console.log('click'); }}> to
+	<button className="square" onClick = { ()=>console.log('click') }>
+13. Under class Square, add
+	constructor(props){
+   	   super(props);
+  	   this.state = {
+   	   value: null,
+   	  };
+	}
+14. For class Square's Render function, replace this.props.value with this.state.value inside the <button> tag. Replace the onClick={...} event handler with onClick={() => this.setState({value: 'X'})}. Put the className and onClick props on separate lines for better readability.
+15. Install React Devtools for Chrome that lets you inspect a React component tree with your browser’s developer tools
+16. Add a constructor to the Board and set the Board’s initial state to contain an array of 9 nulls corresponding to the 9 squares:
+  constructor(props) {
+    super(props);
+    this.state = {
+      squares: Array(9).fill(null),
+    };
+  }
+17. change the renderSquare method in Board to:
+	onClick={() => this.handleClick(i)}
+18.Replace this.state.value with this.props.value in Square’s render method
+Replace this.setState() with this.props.onClick() in Square’s render method
+Delete the constructor from Square because Square no longer keeps track of the game’s state
+
+19. add handle click function to board:
+  handleClick(i) {
+    const squares = this.state.squares.slice();
+    squares[i] = 'X';
+    this.setState({squares: squares});
+  }
+
+20. set the first move to be “X” by default. We can set this default by modifying the initial state in our Board constructor:
+	xIsNext: true,
+
+21. update the Board’s handleClick function to flip the value of xIsNext:
+	squares[i] = this.state.xIsNext ? 'X' : 'O';
+    this.setState({
+	 xIsNext: !this.state.xIsNext,
+
+22.change the “status” text in Board’s render so that it displays which player has the next turn:
+	const status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
+
+23.  Copy this helper function and paste it at the end of the file:
+function calculateWinner(squares) {
+  const lines = [
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8],
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8],
+    [0, 4, 8],
+    [2, 4, 6],
+  ];
+  for (let i = 0; i < lines.length; i++) {
+    const [a, b, c] = lines[i];
+    if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
+      return squares[a];
+    }
+  }
+  return null;
+}
+
+24. call calculateWinner(squares) in the Board’s render function to check if a player has won. If a player has won, we can display text such as “Winner: X” or “Winner: O”. We’ll replace the status declaration in Board’s render function with this code:
+    const winner = calculateWinner(this.state.squares);
+    let status;
+    if (winner) {
+      status = 'Winner: ' + winner;
+    } else {
+      status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
+    }
+
+25. change the Board’s handleClick function to return early by ignoring a click if someone has won the game or if a Square is already filled:
+    if (calculateWinner(squares) || squares[i]) {
+      return;
+    }
+
+26. To add the trace back history functions, set up the initial state for the Game component within its constructor:
+  constructor(props) {
+    super(props);
+    this.state = {
+      history: [{
+        squares: Array(9).fill(null),
+      }],
+      xIsNext: true,
+    };
+  }
+
+27. Here are the required steps to transform the Board component:
+Delete the constructor in Board.
+Replace this.state.squares[i] with this.props.squares[i] in Board’s renderSquare.
+Replace this.handleClick(i) with this.props.onClick(i) in Board’s renderSquare.
+
+28. Update Game's component render function to use the most recent history entry to determine and display the game's status:
+  render() {
+    const history = this.state.history;
+    const current = history[history.length - 1];
+    const winner = calculateWinner(current.squares);
+    let status;
+    if (winner) {
+      status = 'Winner: ' + winner;
+    } else {
+      status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
+    }
+
+    return (
+      <div className="game">
+        <div className="game-board">
+          <Board
+            squares={current.squares}
+            onClick={(i) => this.handleClick(i)}
+          />
+        </div>
+        <div className="game-info">
+          <div>{status}</div>
+          <ol>{/* TODO */}</ol>
+        </div>
+      </div>
+    );
+  }
+
+29. Refactor the board's render method so it looks like:
+    render() {
+    return (
+      <div>
+        <div className="board-row">
+          {this.renderSquare(0)}
+          {this.renderSquare(1)}
+          {this.renderSquare(2)}
+        </div>
+        <div className="board-row">
+          {this.renderSquare(3)}
+          {this.renderSquare(4)}
+          {this.renderSquare(5)}
+        </div>
+        <div className="board-row">
+          {this.renderSquare(6)}
+          {this.renderSquare(7)}
+          {this.renderSquare(8)}
+        </div>
+      </div>
+    );
+  }
+
+30. move the handleClick method from the Board component to the Game component. We also need to modify handleClick because the Game component’s state is structured differently. Within the Game’s handleClick method, we concatenate new history entries onto history.
+   handleClick(i) {
+    const history = this.state.history;
+    const current = history[history.length - 1];
+    const squares = current.squares.slice();
+    if (calculateWinner(squares) || squares[i]) {
+      return;
+    }
+    squares[i] = this.state.xIsNext ? 'X' : 'O';
+    this.setState({
+      history: history.concat([{
+        squares: squares,
+      }]),
+      xIsNext: !this.state.xIsNext,
+    });
+  }
+
+31. To show past moves, map over the history in the Game’s render method:
+render() {
+    const history = this.state.history;
+    const current = history[history.length - 1];
+    const winner = calculateWinner(current.squares);
+
+    const moves = history.map((step, move) => {
+      const desc = move ?
+        'Go to move #' + move :
+        'Go to game start';
+      return (
+        <li>
+          <button onClick={() => this.jumpTo(move)}>{desc}</button>
+        </li>
+      );
+    });
+
+    let status;
+    if (winner) {
+      status = 'Winner: ' + winner;
+    } else {
+      status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
+    }
+
+    return (
+      <div className="game">
+        <div className="game-board">
+          <Board
+            squares={current.squares}
+            onClick={(i) => this.handleClick(i)}
+          />
+        </div>
+        <div className="game-info">
+          <div>{status}</div>
+          <ol>{moves}</ol>
+        </div>
+      </div>
+    );
+  }
+
+32. Add key={move}; add stepNumber: 0
+
+33. Add jumpTo Function:
+  jumpTo(step) {
+    this.setState({
+      stepNumber: step,
+      xIsNext: (step % 2) === 0,
+    });
+  }
+
+34. replace reading this.state.history with this.state.history.slice(0, this.state.stepNumber + 1). This ensures that if we “go back in time” and then make a new move from that point, we throw away all the “future” history that would now become incorrect.
+
+
+

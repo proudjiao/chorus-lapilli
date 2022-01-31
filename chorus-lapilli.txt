@@ -1,0 +1,225 @@
+chorus-lapilli
+
+* Note to graders: after 3 moves from each player, valid selection of a square will be highlighted in yellow. Un-click the square to dis-select.  Note that the highlight thing is not required by the prompt but simply serves as a better visual guide to the players.
+1. first we directly edit on the codes for tic-tact-toes. We will rename the file to chorus-lapilli later
+
+2. To implement the part "After your first three moves, ", go to function handleClicks(), split
+    "If (calculateWinner(squares) || squares[i]) {
+      return;
+    }add statement:"
+into:
+    "// if winner exists, don't execute anything
+    if (calculateWinner(squares)) {
+      return;
+    }
+    // otherwise, check if it's after 3 moves
+    if (after3Move){
+      this.handle4thMoveOn(i, squareSelected);
+      // console.log("square Selected: " + squareSelected);
+      // console.log("bgColor: " + color);
+      return;
+    }
+    //if it's not after3 moves, do the following
+    if (squares[i]){
+      return;
+    }"
+3. We will now deal with situations after 3 moves in the function handle4thMoveOn. Under class Game,  create the following function
+    handle4thMoveOn(i):
+    const history = this.state.history.slice(0, this.state.stepNumber + 1);
+    const player = (this.state.xIsNext ? "X" : "O")
+    const current = history[history.length - 1];
+    const squares = current.squares.slice();
+    const middle = squares[4];
+// case square has not been selected: 
+    // player has to select a nonempty spot, meaning squares(i) == player
+    if (squareSelected == -1){
+       return;
+      });
+    // if middle is occupied and player select a spot that is not middle and cannot win, return
+      if (middle == player && i != 4 && this.moveWillNotWin(i)){
+        return;
+      }
+    // TODO1
+// else if player unclick the selected the square, he can choose another square
+    } else if(i == squareSelected){
+      // TODO2
+// case square is selected & player did not unclick:
+    } else {
+      // player must move the selected square to an empty place
+      if (!areNeighbors(squareSelected, i) || squares[i] != null){
+        return;
+      }
+      // if middle is occupied & selected is not middle square, directly return if next move cannot win
+      if (middle == player && squareSelected != 4){
+        // TODO3
+        }
+      // else player's choice is valid
+      //TODO4
+  }
+
+4. Since later on we want to introduce a color option for selected squares after 3 moves, we need to add private state parameter in Game under the Constructor setState function:
+	bgColor: Array(9).fill("white"),
+
+5. We also need to add another parameter to record which square we have selected. This will be useful after 3 moves, so write in Game under the Constructor setState function
+	squareSelected: -1,
+
+6. We will use and update these two parameters in handle4thMoveOn(), so under handle4thMoveOn(), create two new const:
+	const bgColor = this.state.bgColor;
+	const squareSelected = this.state.squareSelected;
+
+7. Replace //TODO1 with the following code to update selected squares
+      bgColor[i] = "yellow";
+      this.setState({
+        squareSelected: i,
+        bgColor: bgColor,
+      });
+
+8. Implement moveWillNotWin(i), a helper function is built under class Game in order to access the history square to check if the move can win or not. Given a spot i, it will check all its neighbors to see if the player can win if he plays the move in any of those neighbor area.
+    moveWillNotWin(i){
+    const history = this.state.history.slice(0, this.state.stepNumber + 1);
+    const current = history[history.length - 1];
+    const squares = current.squares.slice();
+    const player = (this.state.xIsNext ? "X" : "O");
+    // check for each valid squares that ith piece can move to, if it can go to a spot where player wins, return false
+    for (let j = 0; j < neighbor[i].length; j++){
+      const attemptedMove = neighbor[i][j];
+      if (squares[attemptedMove] == null){
+        var squareScenario = squares;
+        squareScenario[attemptedMove] = player;
+        squareScenario[i] = null;
+        if (calculateWinner(squareScenario) == player){
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
+9. In order for the moveWillNot to work, we need to know who everyone's neighbor is. In the global scope, create
+	const neighbor = {
+ 	  0: [1,3,4],
+ 	  1: [0,2,3,4,5],
+	  2: [1,4,5],
+	  3: [0,1,4,6,7],
+	  4: [0,1,2,3,5,6,7,8],
+	  5: [1,2,4,7,8],
+	  6: [3,4,7],
+	  7: [3,4,5,6,8],
+	  8: [4,5,7]
+	}
+
+10. Now we consider case if player unclick the selected the square: we reset the squareSelected to default and unhighlight the square. So replace TODO2 with:
+      bgColor[i] = "white";
+      this.setState({
+        squareSelected: -1,
+        bgColor: bgColor,
+      });
+
+11. To check if two spots are neighbors, we build a helper function. This function does not depend on any game state or props. So we write it in the global domain:
+	function areNeighbors(squareSelected, i){
+ 	 for (let j = 0; j < neighbor[squareSelected].length; j++){
+ 	   if (neighbor[squareSelected][j] == i){
+	      return true;
+	   }
+ 	  }
+	 return false;
+	 }12. Now we consider case where player has already selected a square and did not unclick his square, then he is now putting the selected square into some other square: if player select an invalid square, nothing should happen; if the middle is occupied and player choose to place a non-mid square in another square and that move does not win, then also nothing should happen. Therefore, replace //TODO3 with:
+        var squareScenario = squares;
+        squareScenario[i] = player;
+        squareScenario[squareSelected] = null;
+        if (calculateWinner(squareScenario) != player){
+          return;
+
+13. Now that we excluded every invalid case, the player must have place a valid move. We thus modify the Game state to remember the move .replace //TODO4 with: 
+      squares[i] = player;
+      squares[squareSelected] = null;
+      this.setState({
+        history: history.concat([
+          {
+            squares: squares,
+          }
+        ]),
+        stepNumber: history.length,
+        xIsNext: !this.state.xIsNext,
+        squareSelected: -1,
+        bgColor: Array(9).fill("white"),
+      });
+
+14. Note that all functions have been implemented but now we need to make the color highlight thing work. To give colors to the squares, we need to add the style element when declaring the buttons. Therefore, replace
+	function Square(props) {
+	  return (
+	    <button className="square" onClick={props.onClick}>
+	      {props.value}
+	    </button>
+	  );
+	}
+with: 
+	function Square(props) {
+	  return (
+	    <button className="square" onClick={props.onClick} style={{backgroundColor: props.bgColor}} >
+	      {props.value}
+	    </button>
+	  );
+	}
+15. To make the Square inherit the colors from Board, in Board's renderSquare(i) function, add a prop called bgColor which will inherit color from the Game Class. Now the renderSquare should look like:
+ renderSquare(i) {
+    return (
+      <Square
+        value={this.props.squares[i]}
+        onClick={() => this.props.onClick(i)}
+        bgColor = {this.props.bgColor[i]}
+      />
+    );
+  }
+
+16. Lastly, to pass bgColor from Game to Board, add 
+	bgColor={this.state.bgColor}
+Under Game's render()'s return() function. Now the Game's render()'s return() function looks like: 
+    return (
+      <div className="game">
+        <div className="game-board">
+          <Board
+            squares={current.squares}
+            onClick={i => this.handleClick(i)}
+            bgColor={this.state.bgColor}
+          />
+        </div>
+        <div className="game-info">
+          <div>{status}</div>
+          <ol>{moves}</ol>
+        </div>
+      </div>
+    );
+
+17. Run "npm pack --dry-run" in the console under the app directory gives:
+
+npm notice 
+npm notice 📦  my-app@0.1.0
+npm notice === Tarball Contents === 
+npm notice 3.4kB README.md           
+npm notice 809B  package.json        
+npm notice 3.9kB public/favicon.ico  
+npm notice 1.7kB public/index.html   
+npm notice 5.3kB public/logo192.png  
+npm notice 9.7kB public/logo512.png  
+npm notice 492B  public/manifest.json
+npm notice 67B   public/robots.txt   
+npm notice 639B  src/index.css       
+npm notice 7.2kB src/index.js        
+npm notice === Tarball Details === 
+npm notice name:          my-app                                  
+npm notice version:       0.1.0                                   
+npm notice filename:      my-app-0.1.0.tgz                        
+npm notice package size:  24.3 kB                                 
+npm notice unpacked size: 33.2 kB                                 
+npm notice shasum:        2a5bb84feb0039873eddcc9bf953a49f46ac072f
+npm notice integrity:     sha512-7O02EHSjqATht[...]6Qnko6cmTVwmw==
+npm notice total files:   10                                      
+npm notice 
+my-app-0.1.0.tgz
+
+18. Now run "npm pack" gives my-app-0.1.0.tgz
+
+19. Rename the file to chorus-lapilli.tgz
+
+20. Congrats! You are done!
