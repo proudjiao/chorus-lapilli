@@ -17,6 +17,8 @@ Chorus lapilli is like tic-tac-toe in that players take turn placing pieces on a
 
 tic-tac-toe.txt and chorus-lapilli.txt are two log files that recorded every step I took in order to make the web application successful.
 
+
+
 ---
 
 
