@@ -15,7 +15,7 @@ This is my first attempt at building a web-based game using React. In the proces
 
 ## About the Log Files
 
-
+[tic-tac-toe.txt] and [chorus-lapilli.txt] are two log files that recorded every step I took in order to make the web application successful.
 
 ---
 
