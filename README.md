@@ -1,3 +1,25 @@
+# Chorus-Lapilli
+
+## Game Background
+
+As a popular board game in ancient Rome, Chorus-Lapilli (“dancing grains”) is a variant of terni lapilli (“three grains”).
+
+Chorus lapilli is like tic-tac-toe in that players take turn placing pieces on a 3×3 board and the goal is to get three pieces in a row. However, it differs from tic-tac-toe in two ways:
+
+* After your first three moves, instead of adding further pieces you must instead move one of your existing pieces to an empty square that is adjacent vertically, horizontally, or diagonally. Therefore, after your third move you always occupy three squares.
+* If you have three pieces on the board and one of your pieces is in the center square, you must either win or vacate the center square in your next move.
+
+## Project background
+
+This is my first attempt at building a web-based game using React. In the process of exploration, I learned about React, JavaScript, JSon, Node.js, HTML, CSS, DOM, JSX, Chrome dev tools, React reconciliation. This [React Tutorial](https://reactjs.org/tutorial/tutorial.html) is immensely helpful during the course of my project
+
+## About the Log Files
+
+
+
+---
+
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
